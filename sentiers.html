@@ -6,14 +6,34 @@
     <link rel="stylesheet" href="../parcnational/000/styles.css">
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <style>
-        /* Style pour afficher la carte comme un carré à droite */
         #map {
             position: fixed;
-            bottom: 20px; /* Espacement par rapport au bas de la page */
-            right: 20px;  /* Espacement par rapport au côté droit */
-            width: 300px; /* Largeur du carré */
-            height: 300px; /* Hauteur du carré (identique à la largeur pour un carré) */
-            border: 2px solid #000; /* Optionnel: bordure pour mieux visualiser */
+            bottom: 20px;
+            right: 20px;
+            width: 300px;
+            height: 300px;
+            border: 2px solid #000;
+        }
+
+        #sentiers-section {
+            border-top: 1px solid #ddd;
+            margin-top: 15%;
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-top: 20px;
+            cursor: pointer;
+        }
+
+        .sentier {
+            margin-bottom: 20px;
+            cursor: pointer;
         }
     </style>
 </head>
@@ -22,28 +42,40 @@
         <div class="overlay">
             <h1>Explorez le Massif des Calanques</h1>
             <p>Découvrez nos sentiers d'exception</p>
-            <a href="#decouverte" class="cta-button">Découvrir</a>
+            <a class="cta-button" id="discover-btn">Découvrir</a>
         </div>
     </section>
+
     <div id="map"></div>
 
-    <script>
-        var map = L.map('map').setView([43.3, 5.4], 12); // Coordonées pour Marseille
+    <section id="sentiers-section">
+        <h2>Liste des Sentiers</h2>
+        <div id="sentiers-list"></div>
+    </section>
 
-        // Affichage de la carte OpenStreetMap
+    <script>
+        // Initialiser la carte
+        var map = L.map('map').setView([43.3, 5.4], 12);
+
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
+
+        var sentiersData = []; // Tableau pour stocker les données des sentiers
+
+        // Fonction pour centrer la carte sur un point
+        function centerMapOnPoint(lat, lng) {
+            map.setView([lat, lng], 14); // Zoom à 14 ou ajustez en fonction de vos besoins
+        }
 
         // Récupérer les points d'intérêt depuis le serveur avec AJAX
         fetch('getSentiers.php')
             .then(response => response.json())
             .then(data => {
-                // Ajouter les sentiers à la carte
+                sentiersData = data; // Stocker les données des sentiers
                 data.forEach(function(point) {
                     var marker = L.marker([point.latitude, point.longitude]).addTo(map);
 
-                    // Création de la popup avec l'image, la description et les autres informations
                     var popupContent = `
                         <b>${point.name}</b><br>
                         Difficulté: ${point.difficulte}<br>
@@ -53,10 +85,39 @@
 
                     marker.bindPopup(popupContent);
                 });
+
+                // Ajouter les sentiers à la liste
+                var sentiersList = document.getElementById('sentiers-list');
+                sentiersList.innerHTML = '';
+
+                data.forEach(function(point) {
+                    var sentierDiv = document.createElement('div');
+                    sentierDiv.classList.add('sentier');
+                    sentierDiv.innerHTML = `
+                        <h3>${point.name}</h3>
+                        <p><b>Difficulté :</b> ${point.difficulte}</p>
+                        <p><b>Longueur :</b> ${point.longueur_km} km</p>
+                        <p><b>Description :</b> ${point.description}</p>
+                    `;
+                    // Ajouter un événement de clic pour centrer la carte sur ce point
+                    sentierDiv.addEventListener('click', function() {
+                        centerMapOnPoint(point.latitude, point.longitude);
+                    });
+                    sentiersList.appendChild(sentierDiv);
+                });
             })
             .catch(error => {
                 console.error('Erreur lors du chargement des sentiers:', error);
             });
+
+        document.getElementById('discover-btn').addEventListener('click', function(event) {
+            event.preventDefault();
+
+            document.querySelector('#sentiers-section').scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+        });
     </script>
 </body>
 </html>
