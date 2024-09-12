@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Carte des Sentiers avec Points d'Intérêt</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="../parcnational/000/styles.css">
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <style>
+        /* Style pour afficher la carte comme un carré à droite */
+        #map {
+            position: fixed;
+            bottom: 20px; /* Espacement par rapport au bas de la page */
+            right: 20px;  /* Espacement par rapport au côté droit */
+            width: 300px; /* Largeur du carré */
+            height: 300px; /* Hauteur du carré (identique à la largeur pour un carré) */
+            border: 2px solid #000; /* Optionnel: bordure pour mieux visualiser */
+        }
+    </style>
+</head>
+<body>
+    <section class="main-header">
+        <div class="overlay">
+            <h1>Explorez le Massif des Calanques</h1>
+            <p>Découvrez nos sentiers d'exception</p>
+            <a href="#decouverte" class="cta-button">Découvrir</a>
+        </div>
+    </section>
+    <div id="map"></div>
+
+    <script>
+        var map = L.map('map').setView([43.3, 5.4], 12); // Coordonées pour Marseille
+
+        // Affichage de la carte OpenStreetMap
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        // Récupérer les points d'intérêt depuis le serveur avec AJAX
+        fetch('getSentiers.php')
+            .then(response => response.json())
+            .then(data => {
+                // Ajouter les sentiers à la carte
+                data.forEach(function(point) {
+                    var marker = L.marker([point.latitude, point.longitude]).addTo(map);
+
+                    // Création de la popup avec l'image, la description et les autres informations
+                    var popupContent = `
+                        <b>${point.name}</b><br>
+                        Difficulté: ${point.difficulte}<br>
+                        Longueur: ${point.longueur_km} km<br>
+                        <p>${point.description}</p>
+                    `;
+
+                    marker.bindPopup(popupContent);
+                });
+            })
+            .catch(error => {
+                console.error('Erreur lors du chargement des sentiers:', error);
+            });
+    </script>
+</body>
+</html>
