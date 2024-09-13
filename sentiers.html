@@ -1,123 +1,33 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Carte des Sentiers avec Points d'Intérêt</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <link rel="stylesheet" href="../parcnational/000/styles.css">
+    <link rel="stylesheet" href="../parcnational/map.css">
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-    <style>
-        #map {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            width: 300px;
-            height: 300px;
-            border: 2px solid #000;
-        }
-
-        #sentiers-section {
-            border-top: 1px solid #ddd;
-            margin-top: 15%;
-        }
-
-        .cta-button {
-            display: inline-block;
-            padding: 10px 20px;
-            background-color: #007BFF;
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-            margin-top: 20px;
-            cursor: pointer;
-        }
-
-        .sentier {
-            margin-bottom: 20px;
-            cursor: pointer;
-        }
-    </style>
 </head>
+
 <body>
     <section class="main-header">
         <div class="overlay">
             <h1>Explorez le Massif des Calanques</h1>
             <p>Découvrez nos sentiers d'exception</p>
-            <a class="cta-button" id="discover-btn">Découvrir</a>
+            <a class="cta-button" id="discover-btn">Decouvrir</a>
         </div>
     </section>
 
-    <div id="map"></div>
+    <div id="map">
+        <div id="map-close-button" class="map-close-button">&times;</div>
+    </div>
 
     <section id="sentiers-section">
         <h2>Liste des Sentiers</h2>
         <div id="sentiers-list"></div>
     </section>
 
-    <script>
-        // Initialiser la carte
-        var map = L.map('map').setView([43.3, 5.4], 12);
-
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        }).addTo(map);
-
-        var sentiersData = []; // Tableau pour stocker les données des sentiers
-
-        // Fonction pour centrer la carte sur un point
-        function centerMapOnPoint(lat, lng) {
-            map.setView([lat, lng], 14); // Zoom à 14 ou ajustez en fonction de vos besoins
-        }
-
-        // Récupérer les points d'intérêt depuis le serveur avec AJAX
-        fetch('getSentiers.php')
-            .then(response => response.json())
-            .then(data => {
-                sentiersData = data; // Stocker les données des sentiers
-                data.forEach(function(point) {
-                    var marker = L.marker([point.latitude, point.longitude]).addTo(map);
-
-                    var popupContent = `
-                        <b>${point.name}</b><br>
-                        Difficulté: ${point.difficulte}<br>
-                        Longueur: ${point.longueur_km} km<br>
-                        <p>${point.description}</p>
-                    `;
-
-                    marker.bindPopup(popupContent);
-                });
-
-                // Ajouter les sentiers à la liste
-                var sentiersList = document.getElementById('sentiers-list');
-                sentiersList.innerHTML = '';
-
-                data.forEach(function(point) {
-                    var sentierDiv = document.createElement('div');
-                    sentierDiv.classList.add('sentier');
-                    sentierDiv.innerHTML = `
-                        <h3>${point.name}</h3>
-                        <p><b>Difficulté :</b> ${point.difficulte}</p>
-                        <p><b>Longueur :</b> ${point.longueur_km} km</p>
-                        <p><b>Description :</b> ${point.description}</p>
-                    `;
-                    // Ajouter un événement de clic pour centrer la carte sur ce point
-                    sentierDiv.addEventListener('click', function() {
-                        centerMapOnPoint(point.latitude, point.longitude);
-                    });
-                    sentiersList.appendChild(sentierDiv);
-                });
-            })
-            .catch(error => {
-                console.error('Erreur lors du chargement des sentiers:', error);
-            });
-
-        document.getElementById('discover-btn').addEventListener('click', function(event) {
-            event.preventDefault();
-
-            document.querySelector('#sentiers-section').scrollIntoView({
-                behavior: 'smooth',
-                block: 'start'
-            });
-        });
-    </script>
+    <script src="../parcnational/map.js"></script> 
 </body>
 </html>

@@ -13,7 +13,7 @@ if ($conn->connect_error) {
 }
 
 // Requête pour récupérer les sentiers
-$sql = "SELECT name, latitude, longitude, difficulte, longueur_km, description FROM sentiers_calanques";
+$sql = "SELECT name, latitude, longitude, difficulte, longueur_km, image_url, description FROM sentiers_calanques";
 $result = $conn->query($sql);
 
 $sentiers = array();
