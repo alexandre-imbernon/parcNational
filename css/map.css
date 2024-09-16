@@ -1,0 +1,62 @@
+/* Styles pour la carte */
+#map {
+    position: fixed; /* Garder la carte en position fixe */
+    bottom: 20px;
+    right: 20px;
+    width: 300px;
+    height: 300px;
+    border: 2px solid #000;
+    z-index: 1000; /* S'assurer que la carte est au-dessus des autres éléments */
+}
+
+/* Styles pour la section des sentiers */
+#sentiers-section {
+    border-top: 1px solid #ddd;
+    margin-top: 15%;
+}
+
+#sentiers-list .sentier {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+#sentiers-list .sentier:last-child {
+    border-bottom: none; /* Retirer la bordure pour le dernier élément */
+}
+
+/* Styles pour le bouton de découverte */
+.cta-button {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #007BFF;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    margin-top: 20px;
+    cursor: pointer;
+}
+
+/* Styles pour les sentiers */
+.sentier {
+    position: relative;
+    pointer-events: none; /* Rendre tout le bloc non-cliquable */
+    margin-bottom: 20px;
+    cursor: pointer;
+}
+
+.sentier-image {
+    width: 100%;
+    max-width: 400px;
+    height: auto;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    cursor: pointer; /* Indiquer que l'image est cliquable */
+    pointer-events: auto; /* Activer les clics uniquement sur l'image */
+}
+
+/* Styles pour les éléments de la page avec un z-index inférieur */
+.main-header,
+#sentiers-section {
+    position: relative; /* Assurer que ces éléments sont en position relative */
+    z-index: 1; /* Niveau de superposition inférieur à celui de la carte */
+}
